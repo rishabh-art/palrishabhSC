@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palrishabh Scientific Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            transition: background-color 0.3s;
+        }
+        .calculator {
+            width: 360px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s;
+        }
+        .header {
+            padding: 10px;
+            text-align: center;
+            background-color: #3f51b5; /* Indigo color for dark mode */
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .input-box {
+            padding: 20px;
+            background-color: #eee;
+            border-bottom: 1px solid #ccc;
+            text-align: right;
+            font-size: 24px;
+            overflow: hidden;
+        }
+        .tab-container {
+            display: flex;
+            background-color: #333;
+            color: white;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #444;
+        }
+        .tab.active {
+            background-color: #555;
+        }
+        .tab-content {
+            padding: 20px;
+            flex-grow: 1;
+            overflow: auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .button {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #ddd;
+        }
+        .button.operator {
+            background-color: #f4a542;
+            color: white;
+        }
+        .button.operator:hover {
+            background-color: #f39c12;
+        }
+        .button.special {
+            background-color: #f39c12;
+            color: white;
+        }
+        .button.special:hover {
+            background-color: #e67e22;
+        }
+        .button.double {
+            grid-column: span 2;
+        }
+        .button.full {
+            grid-column: span 4;
+        }
+        .clear-button {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 18px;
+            padding: 15px 0;
+            border: none;
+            cursor: pointer;
+        }
+        .clear-button:hover {
+            background-color: #c0392b;
+        }
+        .mode-toggle {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #3f51b5; /* Indigo color for dark mode */
+        }
+        .mode-toggle.light-mode {
+            color: #1e90ff; /* Blue color for light mode */
+        }
+        /* Dark mode styles */
+        .dark-mode .calculator {
+            background-color: #333;
+        }
+        .dark-mode .input-box {
+            background-color: #444;
+            color: #fff;
+        }
+        .dark-mode .tab-container {
+            background-color: #555;
+        }
+        .dark-mode .tab {
+            background-color: #666;
+        }
+        .dark-mode .tab.active {
+            background-color: #777;
+        }
+        .dark-mode .button {
+            background-color: #666;
+            border: 1px solid #555;
+            color: #fff;
+        }
+        .dark-mode .button.operator {
+            background-color: #f4a542;
+        }
+        .dark-mode .button.special {
+            background-color: #f39c12;
+        }
+        .dark-mode .clear-button {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="header">Palrishabh Scientific Calculator</div>
+        <div class="input-box" id="display" contenteditable="true" oninput="updateDisplay()" onkeydown="handleKeyDown(event)">0</div>
+        <div class="tab-container">
+            <div class="tab active" onclick="showTab('operations')">Operations</div>
+            <div class="tab" onclick="showTab('functions')">Functions</div>
+        </div>
+        <div class="tab-content" id="operations">
+            <div class="grid">
+                <!-- Existing buttons -->
+                <div class="button double" onclick="backspace()">←</div>
+                <div class="button double" onclick="calculate()">=</div>
+                <div class="button" onclick="appendToDisplay('7')">7</div>
+                <div class="button" onclick="appendToDisplay('8')">8</div>
+                <div class="button" onclick="appendToDisplay('9')">9</div>
+                <div class="button operator" onclick="appendToDisplay('/')">/</div>
+
+                <div class="button" onclick="appendToDisplay('4')">4</div>
+                <div class="button" onclick="appendToDisplay('5')">5</div>
+                <div class="button" onclick="appendToDisplay('6')">6</div>
+                <div class="button operator" onclick="appendToDisplay('*')">*</div>
+
+                <div class="button" onclick="appendToDisplay('1')">1</div>
+                <div class="button" onclick="appendToDisplay('2')">2</div>
+                <div class="button" onclick="appendToDisplay('3')">3</div>
+                <div class="button operator" onclick="appendToDisplay('-')">-</div>
+
+                <div class="button" onclick="appendToDisplay('0')">0</div>
+                <div class="button" onclick="appendToDisplay('.')">.</div>
+                <div class="button special" onclick="appendToDisplay('%')">%</div>
+                <div class="button operator" onclick="appendToDisplay('+')">+</div>
+
+                <div class="button special" onclick="appendToDisplay('π')">π</div>
+                <div class="button special" onclick="appendToDisplay('e')">e</div>
+                <div class="button special" onclick="appendToDisplay('1/x')">1/x</div>
+                <div class="button special" onclick="appendToDisplay('√')">√</div>
+            </div>
+        </div>
+        <div class="tab-content" id="functions" style="display:none;">
+            <div class="grid">
+                <div class="button" onclick="handleFunction('sin')">sin</div>
+                <div class="button" onclick="handleFunction('cos')">cos</div>
+                <div class="button" onclick="handleFunction('tan')">tan</div>
+                <div class="button" onclick="handleFunction('cosec')">cosec</div>
+
+                <div class="button" onclick="handleFunction('sec')">sec</div>
+                <div class="button" onclick="handleFunction('cot')">cot</div>
+                <div class="button" onclick="handleFunction('log')">log</div>
+                <div class="button" onclick="handleFunction('ln')">ln</div>
+                
+                <div class="button" onclick="handleFunction('x^2')">x^2</div>
+                <div class="button" onclick="handleFunction('x^y')">x^y</div>
+                <div class="button" onclick="handleFunction('e^x')">e^x</div>
+                <div class="button" onclick="handleFunction('10^x')">10^x</div>
+            </div>
+        </div>
+        <button class="clear-button" onclick="clearDisplay()">C</button>
+        <button class="mode-toggle" id="modeToggle" onclick="toggleMode()"><i class="fas fa-sun"></i></button>
+    </div>
+
+    <script>
+        let currentOperation = '';
+        let isNewOperation = false;
+        let lastFunction = '';
+
+        function showTab(tabName) {
+            document.getElementById('operations').style.display = tabName === 'operations' ? 'block' : 'none';
+            document.getElementById('functions').style.display = tabName === 'functions' ? 'block' : 'none';
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            if (isNewOperation) {
+                display.innerText = value;
+                isNewOperation = false;
+            } else {
+                if (display.innerText === '0' && value !== '=') {
+                    display.innerText = value;
+                } else {
+                    display.innerText += value;
+                }
+            }
+            currentOperation += value;
+        }
+
+        function handleFunction(func) {
+            const display = document.getElementById('display');
+            if (display.innerText === '0' || isNewOperation) {
+                display.innerText = func + '(';
+                currentOperation = func + '(';
+                isNewOperation = false;
+            } else {
+                currentOperation += `)*${func}(`;
+                display.innerText += `)*${func}(`;
+            }
+            lastFunction = func;
+        }
+
+        function backspace() {
+            const display = document.getElementById('display');
+            if (display.innerText.length > 1) {
+                display.innerText = display.innerText.slice(0, -1);
+                currentOperation = currentOperation.slice(0, -1);
+            } else {
+                display.innerText = '0';
+                currentOperation = '';
+            }
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').innerText = '0';
+            currentOperation = '';
+            isNewOperation = false;
+        }
+
+        function calculate() {
+            try {
+                let expression = currentOperation;
+
+                // Handle special characters
+                expression = expression.replace(/√(\d+\.?\d*)/g, 'Math.sqrt($1)');
+                expression = expression.replace(/1\/x/g, '1/');
+
+                // Replace π and e with their numerical values
+                expression = expression.replace(/π/g, Math.PI);
+                expression = expression.replace(/e/g, Math.E);
+
+                // Replace function names with Math functions
+                expression = expression.replace(/sin\((.*?)\)/g, 'Math.sin($1)');
+                expression = expression.replace(/cos\((.*?)\)/g, 'Math.cos($1)');
+                expression = expression.replace(/tan\((.*?)\)/g, 'Math.tan($1)');
+                expression = expression.replace(/cosec\((.*?)\)/g, '1/Math.sin($1)');
+                expression = expression.replace(/sec\((.*?)\)/g, '1/Math.cos($1)');
+                expression = expression.replace(/cot\((.*?)\)/g, '1/Math.tan($1)');
+                expression = expression.replace(/log\((.*?)\)/g, 'Math.log10($1)');
+                expression = expression.replace(/ln\((.*?)\)/g, 'Math.log($1)');
+                expression = expression.replace(/x\^2/g, '**2');
+                expression = expression.replace(/x\^y/g, '**');
+                expression = expression.replace(/e\^x/g, 'Math.exp($1)');
+                expression = expression.replace(/10\^x/g, 'Math.pow(10, $1)');
+
+                // Evaluate the expression
+                let result = eval(expression);
+
+                // Check for errors
+                if (result === Infinity || result === -Infinity || isNaN(result)) {
+                    document.getElementById('display').innerText = 'Error';
+                } else {
+                    document.getElementById('display').innerText = result;
+                }
+
+                currentOperation = result.toString();
+                isNewOperation = true;
+                lastFunction = '';
+            } catch (e) {
+                document.getElementById('display').innerText = 'Error';
+                currentOperation = '';
+                isNewOperation = true;
+                lastFunction = '';
+            }
+        }
+
+        function updateDisplay() {
+            const display = document.getElementById('display');
+            currentOperation = display.innerText;
+            isNewOperation = false;
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();  // Prevent the default action
+                calculate();
+            }
+        }
+
+        function toggleMode() {
+            const body = document.body;
+            const calculator = document.querySelector('.calculator');
+            const modeToggle = document.getElementById('modeToggle');
+
+            body.classList.toggle('dark-mode');
+            calculator.classList.toggle('dark-mode');
+
+            if (body.classList.contains('dark-mode')) {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+    </script>
+</body>
+</html>
